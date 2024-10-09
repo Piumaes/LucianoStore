@@ -1,0 +1,73 @@
+const fs = require('fs');
+const chalk = require('chalk');
+const moment = require('moment-timezone');
+const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
+
+const config = JSON.parse(fs.readFileSync('./arquivos/config.json'));
+
+const p = config.p; // Prefixo dos comandos
+const dono = config.dono; // ID do dono
+const nomeBot = config.nomeBot; // Nome do bot
+
+const { StartBot, black, vermelho, amarelo } = require('./connection/connection.js');
+
+async function StartZap() {
+    let sock = await StartBot();
+
+    sock.ev.process(async (events) => {
+        if (events['messages.upsert']) {
+            const newbase = events['messages.upsert'];
+            for (const info of newbase.messages) {
+                if (info.message && typeof info.message === 'object') {
+                    const type = Object.keys(info.message)[0];
+
+                    // Determina a mensagem e o corpo
+                    const body =
+                        (type === 'conversation' && info.message.conversation.startsWith(p)) ? info.message.conversation :
+                        (type === 'extendedTextMessage' && info.message[type].text.startsWith(p)) ? info.message[type].text : '';
+                    const budy =
+                        (type === 'conversation') ? info.message.conversation :
+                        (type === 'extendedTextMessage') ? info.message.extendedTextMessage.text : '';
+
+                    const from = info.key.remoteJid;
+                    const isGroup = from.endsWith('@g.us');
+                    const sender = isGroup ? info.key.participant : from;
+                    const comando = body.slice(1).trim().split(/ +/).shift().toLowerCase(); // Comando após o prefixo
+                    const pushname = info.pushName ? info.pushName : nomeBot; // Nome do usuário
+                    const args = body.trim().split(/ +/).splice(1); // Argumentos do comando
+                    const q = args.join(' '); // Juntar os argumentos
+
+                    const enviar = (message) => {
+                        sock.sendMessage(from, { text: message }, { quoted: info });
+                    };
+
+try {
+switch (comando) { // Adicione aqui seus comandos
+case 'l':
+enviar(`🚨🚨O PORTUNIDADE🚨🚨
+  
+  
+  LOTE A VENDA PRÓXIMO AO IFES DE MAROBÁ VALOR $80MIL
+
+CONTATO: 28998857772  NARCISO
+responde apenas por ligação 📲`)
+break
+
+
+}
+
+if(texto.includes("Pix")){
+enviar("  🔑CHAVE PIX CELULAR📲                                                                                       PIX: 2899950146                     NOME: LUCIANO FIGUEIRA           BANCO: NUBANK")
+}
+
+} catch (e) {
+                        console.log(amarelo('\n', `[ 💥 ERROR DETECTADO 💥 ]`, '\n', vermelho(e)));
+                        sock.sendMessage(dono, { text: e }, { quoted: info });
+                    }
+                }
+            }
+        }
+    });
+}
+
+StartZap();

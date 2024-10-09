@@ -1,0 +1,66 @@
+const fs = require('fs')
+const chalk = require("chalk")
+
+const { delay,useMultiFileAuthState,
+fetchLatestBaileysVersion,
+downloadContentFromMessage,
+generateWAMessageFromContent
+} = require ('@whiskeysockets/baileys')
+
+const {
+StartBot, black,
+vermelho, amarelo
+} = require("./connection/connection.js")
+
+const config = 
+JSON.parse(fs.readFileSync("./arquivos/config.json"))
+
+const p = config.p
+const dono = config.dono
+const nomeBot = config.nomeBot;
+
+async function StartZap() {
+let sock = await StartBot();
+
+sock.ev.process(
+async(events) => {
+if(events['messages.upsert']) {
+const newbase = events['messages.upsert']
+for(const info of newbase.messages) {
+if(info.message && typeof info.message === 'object') {
+const type = Object.keys(info.message)[0];
+
+type_message = JSON.stringify(info.message)
+const isQuotedImage = type === "extendedTextMessage" && type_message.includes("imageMessage")
+
+const body = 
+(type === 'conversation' && info.message.conversation.startsWith(p)) ? info.message.conversation:
+(type === 'extendedTextMessage') && info.message[type].text.startsWith(p) ? info.message[type].text: ''
+const budy =
+(type === 'conversation') ? info.message.conversation: 
+(type === 'extendedTextMessage') ? info.message.extendedTextMessage.text: ''
+
+const from = info.key.remoteJid 
+const isGroup = from.endsWith("@g.us")
+const sender = isGroup ? info.key.participant: from
+const comando = body.slice(1).trim().split(/ +/).shift().toLowerCase()
+const pushname = info.pushName ? info.pushName : nomeBot
+const args = body.trim().split(/ +/).splice(1)
+const q = args.join(' ')
+
+enviar = (blk) => { 
+sock.sendMessage(from,{text: blk},{quoted:info})}
+
+
+try {
+switch(comando) {
+  
+// AQUI FICA OS COMANDOS!!
+
+ case 'oi':
+ sock.sendMessage(from,{text: "Opa, Tudo Bem?"},{quoted:mek})
+ break
+
+ 
+ 
+}} catch(e) { console.log(amarelo('\n',`[ 💥 ERROR DETECTADO 💥 ]`,'\n',vermelho(e))); enviar(e)}}}}})}; StartZap()
